@@ -4,7 +4,6 @@ from scipy.io import loadmat, savemat
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-# from dtw import *
 from tslearn.barycenters import softdtw_barycenter
 from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
@@ -14,8 +13,8 @@ folderDSprior = "./HR_Validation/MAX-HIE/" # available dataset to compute prior:
 # Analyzed subject settings
 folderHRval = "./HR_Validation/MAX-HIE/" # # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
 folderDS = 'MAX-HIE/' # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
-subject_analyzed = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "subject_session_ids.csv"
-session_id = 'visit1' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE use 'MTXXXX'; the subject and session IDs are reported in the file "subject_session_ids.csv"
+subject_analyzed = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
+session_id = 'visit1' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE use 'MTXXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
 
 # HR prior parameters
 freqs = [40.28,41.20,42.11,43.03,43.95,44.86,45.78,46.69,47.61,48.52,49.44,50.35,51.27,52.19,53.10,54.02,54.93,55.85,56.76,57.68,58.59,59.51,60.42,61.34,62.26,63.17,64.09,65.00,65.92,66.83,67.75,68.66,69.58,70.50,71.41,72.33,73.24,74.16,75.07,75.99,76.90,77.82,78.74,79.65,80.57,81.48,82.40,83.31,84.23,85.14,86.06,86.98,87.89,88.81,89.72,90.64,91.55,92.47,93.38,94.30,95.21,96.13,97.05,97.96,98.88,99.79,100.71,101.62,102.54,103.45,104.37,105.29,106.20,107.12,108.03,108.95,109.86,110.78,111.69,112.61,113.53,114.44,115.36,116.27,117.19,118.10,119.02,119.93,120.85,121.77,122.68,123.60,124.51,125.43,126.34,127.26,128.17,129.09,130.00,130.92,131.84,132.75,133.67,134.58,135.50,136.41,137.33,138.24,139.16,140.08,140.99,141.91,142.82,143.74,144.65,145.57,146.48,147.40,148.32,149.23,150.15,151.06,151.98,152.89,153.81,154.72,155.64,156.56,157.47,158.39,159.30,160.22,161.13,162.05,162.96,163.88,164.79,165.71,166.63,167.54,168.46,169.37,170.29,171.20,172.12,173.03,173.95,174.87,175.78,176.70,177.61,178.53,179.44,180.36,181.27,182.19,183.11,184.02,184.94,185.85,186.77,187.68,188.60,189.51,190.43,191.35,192.26,193.18,194.09,195.01,195.92,196.84,197.75,198.67,199.58,200.50,201.42,202.33,203.25,204.16,205.08,205.99,206.91,207.82,208.74,209.66,210.57,211.49,212.40,213.32,214.23,215.15,216.06,216.98,217.90,218.81,219.73] # same as variable 'frequencies' from PPG-derived PSD, range of 40-220 BPM with a resolution of 0.9137 BPM according to De Giovanni et al. https://ieeexplore.ieee.org/document/7723599

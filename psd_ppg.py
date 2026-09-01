@@ -16,10 +16,10 @@ session_id = 'visit1' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE
 folderResults = './PSD_PPG/'
 
 # Signal parameters
-if 'MAX-HIE' in folderDS:
-	fs = 250 # Hz # MAX-HIE
-else:
+if 'SUBMAX-HIE' in folderDS:
 	fs = 176 # Hz # SUBMAX-HIE
+else:
+	fs = 250 # Hz # MAX-HIE
 lowcut = 0.5 # Hz, *60 = min HR according to De Giovanni et al. https://ieeexplore.ieee.org/document/7723599
 highcut = 10.0 # Hz, *60 = max HR according to De Giovanni et al. https://ieeexplore.ieee.org/document/7723599
 

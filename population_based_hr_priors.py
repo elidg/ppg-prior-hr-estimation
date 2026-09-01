@@ -47,10 +47,10 @@ os.makedirs(folderResults, exist_ok=True)
 
 print("Subject " + subject_analyzed + ' Session ' + session_id)
 
-if 'MAX-HIE' in folderDS:
-	subjects_prior = [sub for sub in subjects_all if sub != int(subject_analyzed[3:])] # Leave-One-Subject-Out approach for MAX-HIE
-else:
+if 'SUBMAX-HIE' in folderDS:
 	subjects_prior = subjects_all # Full prior dataset (either MAX-HIE or ACTES) for SUBMAX-HIE
+else:
+	subjects_prior = [sub for sub in subjects_all if sub != int(subject_analyzed[3:])] # Leave-One-Subject-Out approach for MAX-HIE
 
 # ===== STEP 1: Compute HR smoothed series and soft-dtw barycenter average ===== #
 if not os.path.isfile(folderResults + "/t_hr_smoothed_series" + str_prior + ".mat"):

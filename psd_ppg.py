@@ -10,13 +10,16 @@ import matplotlib.pyplot as plt
 
 # SETTINGS
 folderData = './PPG-Prior_Data/'
-folderDB = 'SUBMAX-HIE/' # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
-subject = 'B001' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "subject_session_ids.csv"
-session_id = 'MT0002' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE use 'MTXXXX'; the subject and session IDs are reported in the file "subject_session_ids.csv"
+folderDB = 'MAX-HIE/' # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
+subject = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "subject_session_ids.csv"
+session_id = 'visit1' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE use 'MTXXXX'; the subject and session IDs are reported in the file "subject_session_ids.csv"
 folderResults = './PSD_PPG/'
 
 # Signal parameters
-fs = 176 # Hz, change this accordingly (250 Hz for MAX-HIE, 176 Hz for SUBMAX-HIE)
+if 'MAX-HIE' in folderDB:
+	fs = 250 # Hz # MAX-HIE
+else:
+	fs = 176 # Hz # SUBMAX-HIE
 lowcut = 0.5 # Hz, *60 = min HR according to De Giovanni et al. https://ieeexplore.ieee.org/document/7723599
 highcut = 10.0 # Hz, *60 = max HR according to De Giovanni et al. https://ieeexplore.ieee.org/document/7723599
 
@@ -107,11 +110,10 @@ ppg_cleaned = butter_bandpass_filter(ppg, lowcut, highcut, fs, order=1)
 ppg_cleaned_detrended = detrend(ppg_cleaned)
 
 # ===== STEP 2: Compute PSD window by window =====
-wl_new = int(wl*fs)
-wl_old = int(wl*fs)
+wl_samples = int(wl*fs)
 overlap_sample = int(overlap*fs)
 wind_start = 0
-wind_end = wl_new
+wind_end = wl_samples
 i_wind = 0
 PSD = []
 for sample in range(len(ppg_cleaned_detrended)):
@@ -130,7 +132,7 @@ for sample in range(len(ppg_cleaned_detrended)):
 		PSD.append(norm_psd_wind_cut)
 
 		wind_start = sample-overlap_sample
-		wind_end = sample+wl_new-overlap_sample
+		wind_end = sample+wl_samples-overlap_sample
 		if wind_end > len(ppg_cleaned_detrended):
 			wind_end = len(ppg_cleaned_detrended)
 		i_wind+=1
@@ -146,13 +148,13 @@ savemat(folderResults + folderDB + "time_freq_psd_" + subject + "_" + session_id
 # ===== STEP 3: Plot Heatmap of PPG power spectral density over time =====
 plt.figure(figsize=(10, 6))
 plt.pcolor(time_windows, frequencies, PSD, cmap='turbo')
-plt.xlabel('Time Window Index')
+plt.xlabel('Time (s)')
 plt.colorbar(label='PSD Value')
 plt.ylabel('Frequency (BPM)')
 plt.title('Power Spectral Density Over Time - Subject ' + subject + ' Session ' + session_id)
 
 if not os.path.isfile(folderResults + folderDB + "heatmap_ppg_psd_" + subject + "_" + session_id + ".png"):
-    plt.savefig(folderResults + folderDB + "heatmap_ppg_psd_" + subject + "_" + session_id + ".png")
-
-plt.show()
-plt.close()
+	plt.savefig(folderResults + folderDB + "heatmap_ppg_psd_" + subject + "_" + session_id + ".png")
+	plt.close()
+else:
+	plt.show()

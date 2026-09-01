@@ -72,17 +72,17 @@ if flagTopTraj == 0:
 	mSDTW = loadmat(folderPrior + "softdtw_barycenter_reference" + str_prior + ".mat")
 	dtw_hr_reference = mSDTW['dtw_hr_reference'][0]
 	max_length = max(len(sublist) for sublist in t_smoothed_pop) # soft-dtw barycenter has the length of the longest series
-	max_t = max(sublist[-1] for sublist in t_smoothed_pop) # we take the final time of the longest series
+	max_t = max(sublist[-1] for sublist in t_smoothed_pop) # final time of the longest series
 	dtw_t_reference = np.linspace(0,max_t,max_length)
 
-# === STEP 1: Posterior Probabilty Estimation ===
+# === STEP 1: Posterior Probabilty Estimation (PPE) ===
 # Build posterior probability estimation based 
 # on power spectral density (PSD) of PPG (computed on 8s every 1s)
 # and prior distribution of normalized smoothed HR series 
 # from ECG (not considering the subject analyzed)
 
 # Load PSD of PPG as HR-PPG observatios of HR-PPG
-mPSDhrPPG = loadmat(folderPSDPPG + "time_freq_psd_" + subject_analyzed + "_" + session_id + ".mat") # add 'shimmer_' prefix if using Shimmer ppg data
+mPSDhrPPG = loadmat(folderPSDPPG + "time_freq_psd_" + subject_analyzed + "_" + session_id + ".mat")
 time_windows = mPSDhrPPG['time_windows'][0]
 frequencies = mPSDhrPPG['frequencies'][0]
 PSDhrPPG = mPSDhrPPG['PSD']
@@ -93,7 +93,7 @@ PDFhrPrior = mPDFhrPrior['Z']
 t_grid_prior = mPDFhrPrior['t_grid'][0]
 hr_grid_prior = mPDFhrPrior['hr_grid'][0]
 
-# Compute Posterior Probability Estimation as observations*prior
+# Compute PPE as observations*prior
 ind_t_end = min(t_grid_prior[-1],time_windows[-1])
 PPE = PSDhrPPG[:,:ind_t_end-time_windows[0]+1] * PDFhrPrior[:,time_windows[0]:ind_t_end+1]
 t_grid = t_grid_prior[time_windows[0]:ind_t_end+1]
@@ -270,9 +270,9 @@ else:
 	t_end = np.min([t_traj[-1],t_HRecg[-1]])
 	traj_sel = traj_sel[np.where(t_traj<=t_end)]
 if flagPlotNormHR == 1:
-	plt.plot(t_HRecg,series_HRecg_resampled/HRmax_sub, color = 'crimson', marker = 'o',markersize=10, linestyle='', label = 'HR-ECG') #'dimgrey'
+	plt.plot(t_HRecg,series_HRecg_resampled/HRmax_sub, color = 'crimson', marker = 'o',markersize=10, linestyle='', label = 'HR-ECG')
 else:
-	plt.plot(t_HRecg,series_HRecg_resampled, color = 'crimson', marker = 'o',markersize=10, linestyle='', label = 'HR-ECG') #'dimgrey'
+	plt.plot(t_HRecg,series_HRecg_resampled, color = 'crimson', marker = 'o',markersize=10, linestyle='', label = 'HR-ECG')
 
 # Add BeliefPPG HR (PPG+ACC) if available
 if(os.path.isfile(folderResults + "/beliefppg_estimated_hr.mat")):
@@ -281,14 +281,14 @@ if(os.path.isfile(folderResults + "/beliefppg_estimated_hr.mat")):
 	hr_bfppg = mBFPPG['hr_est'][0]
 	ind_cut = np.where((t_hr_bfppg>=t_traj[0]) & (t_hr_bfppg<=t_traj[-1]))
 	if flagPlotNormHR == 1:
-		plt.plot(t_hr_bfppg[ind_cut],hr_bfppg[ind_cut]/HRmax_sub, color = 'orange', marker = 'd',markersize=10, linestyle='', label = 'HR BeliefPPG') #'dimgrey'
+		plt.plot(t_hr_bfppg[ind_cut],hr_bfppg[ind_cut]/HRmax_sub, color = 'orange', marker = 'd',markersize=10, linestyle='', label = 'HR BeliefPPG')
 	else:
-		plt.plot(t_hr_bfppg[ind_cut],hr_bfppg[ind_cut], color = 'orange', marker = 'd',markersize=10, linestyle='', label = 'HR BeliefPPG') #'dimgrey'
+		plt.plot(t_hr_bfppg[ind_cut],hr_bfppg[ind_cut], color = 'orange', marker = 'd',markersize=10, linestyle='', label = 'HR BeliefPPG')
 
 # Save comparison plot
 plt.legend(fontsize=20)
-if not os.path.isfile(folderResults + "/hr_series_selected" + str_norm + str_prior + str_scoring + ".png"): # add 'shimmer_' prefix if using Shimmer ppg data
-	plt.savefig(folderResults + "/hr_series_selected" + str_norm + str_prior + str_scoring + ".png",dpi=180) # add 'shimmer_' prefix if using Shimmer ppg data
+if not os.path.isfile(folderResults + "/hr_series_selected" + str_norm + str_prior + str_scoring + ".png"): 
+	plt.savefig(folderResults + "/hr_series_selected" + str_norm + str_prior + str_scoring + ".png",dpi=180) 
 
 # Compute error metrics of HR-PPG
 series_HRppg_sel = traj_sel*HRmax_sub

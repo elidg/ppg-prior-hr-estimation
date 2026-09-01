@@ -59,7 +59,7 @@ if(os.path.isfile(folderHRval + 'RR_' + subject_analyzed + '_' + session_id + '.
 	RR = mRR['RR'].reshape(1, -1)[0].astype(float)
 	HRecg = 60/RR
 else:
-	mHR = loadmat(folderHRval + 'hexoskin_heart_rate_' + subject_analyzed + '_' + session_id + '.mat')
+	mHR = loadmat(folderHRval + 'hexoskin_HR_' + subject_analyzed + '_' + session_id + '.mat')
 	t_RR = mHR['t'].reshape(1, -1)[0].astype(float)
 	HRecg = mHR['y_raw'].reshape(1, -1)[0].astype(float)
 # Smooth query HR series

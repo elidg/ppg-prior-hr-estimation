@@ -11,7 +11,7 @@ from statsmodels.nonparametric.kernel_density import KDEMultivariate
 folderDSprior = "./HR_Validation/MAX-HIE/" # available dataset to compute prior: 'MAX-HIE' and 'ACTES'. Use these strings to name the folders. For 'ACTES', download it from physionet.org/content/actes-cycloergometer-exercise/1.0.0/ and save it in 'HR_Validation/ACTES/'
 
 # Analyzed subject settings
-folderHRval = "./HR_Validation/MAX-HIE/" # # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
+folderHRval = "./HR_Validation/MAX-HIE/" # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
 folderDS = 'MAX-HIE/' # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
 subject_analyzed = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
 session_id = 'visit1' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE use 'MTXXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
@@ -31,10 +31,10 @@ def plot_helper(tb, barycenter, t, X):
 if 'ACTES' in folderDSprior:
 	prior_subs_info = pd.read_table(folderDSprior + 'subject-info.csv', sep = ',')
 	priot_test_measure = pd.read_table(folderDSprior + 'test_measure.csv', sep = ',')
-	str_db = '_ACTES'
+	str_prior = '_ACTES'
 	subjects_all = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 18]
 else:
-	str_db = '_MAX-HIE'
+	str_prior = '_MAX-HIE'
 	subjects_all = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 
 # for subject_n in subjects_all: # uncomment this if you want to run the full MAX-HIE with a Leave-One-Subject-Out approach
@@ -53,7 +53,7 @@ else:
 	subjects_prior = subjects_all # Full prior dataset (either MAX-HIE or ACTES) for SUBMAX-HIE
 
 # ===== STEP 1: Compute HR smoothed series and soft-dtw barycenter average ===== #
-if not os.path.isfile(folderResults + "/t_hr_smoothed_series" + str_db + ".mat"):
+if not os.path.isfile(folderResults + "/t_hr_smoothed_series" + str_prior + ".mat"):
 	hr_smoothed_norm_pop = []
 	t_smoothed_pop = []
 	for subject in subjects_prior:
@@ -86,9 +86,9 @@ if not os.path.isfile(folderResults + "/t_hr_smoothed_series" + str_db + ".mat")
 	max_t = max(sublist[-1] for sublist in t_smoothed_pop) # final time of the longest series
 
 	mHRsmoothed = {'t_smoothed_pop': t_smoothed_pop, 'hr_smoothed_norm_pop': hr_smoothed_norm_pop, 't_smoothed_pop_list': t_smoothed_pop_list, 'hr_smoothed_norm_pop_list': hr_smoothed_norm_pop_list}
-	savemat(folderResults + "/t_hr_smoothed_series" + str_db + ".mat",mHRsmoothed)
+	savemat(folderResults + "/t_hr_smoothed_series" + str_prior + ".mat",mHRsmoothed)
 else:
-	mHRsmoothed = loadmat(folderResults + "/t_hr_smoothed_series" + str_db + ".mat")
+	mHRsmoothed = loadmat(folderResults + "/t_hr_smoothed_series" + str_prior + ".mat")
 	t_smoothed_pop = mHRsmoothed['t_smoothed_pop'][0].tolist()
 	t_smoothed_pop = [t_s.T for t_s in t_smoothed_pop]
 	hr_smoothed_norm_pop = mHRsmoothed['hr_smoothed_norm_pop'][0].tolist()
@@ -115,15 +115,15 @@ HR_smoothed = HR_series.values
 HRmax_sub = np.max(HR_smoothed)
 
 # Use soft-dtw barycenter as reference for the dtw
-if os.path.isfile(folderResults + "/softdtw_barycenter_reference" + str_db + ".mat"):
-	mSDTW = loadmat(folderResults + "/softdtw_barycenter_reference" + str_db + ".mat")
+if os.path.isfile(folderResults + "/softdtw_barycenter_reference" + str_prior + ".mat"):
+	mSDTW = loadmat(folderResults + "/softdtw_barycenter_reference" + str_prior + ".mat")
 	dtw_hr_reference = mSDTW['dtw_hr_reference'][0]
 else:
 	dtw_hr_reference = softdtw_barycenter(hr_smoothed_norm_pop, gamma=1., max_iter=50, tol=1e-3)
 	dtw_hr_reference = [item[0] for item in dtw_hr_reference]
 	dtw_hr_reference = np.array(dtw_hr_reference)
 	mSDTW = {'dtw_hr_reference': dtw_hr_reference}
-	savemat(folderResults + "/softdtw_barycenter_reference" + str_db + ".mat",mSDTW)
+	savemat(folderResults + "/softdtw_barycenter_reference" + str_prior + ".mat",mSDTW)
 dtw_t_reference = np.linspace(0,max_t,max_length) #soft-dtw barycenter has the length of the longest series
 
 plt.figure(figsize=(16, 9))
@@ -133,8 +133,8 @@ plt.yticks(fontsize=30)
 plt.xlabel('Time (s)', fontsize=30)
 plt.ylabel('Normalized HR', fontsize=30)
 plt.title('Soft-DTW Barycenter Average of Prior Dataset')
-if not os.path.isfile(folderResults + "/soft-dtw_averaging" + str_db + ".png"):
-	plt.savefig(folderResults + "/soft-dtw_averaging" + str_db + ".png")
+if not os.path.isfile(folderResults + "/soft-dtw_averaging" + str_prior + ".png"):
+	plt.savefig(folderResults + "/soft-dtw_averaging" + str_prior + ".png")
 	plt.close()
 
 # ===== STEP 2: Compute Probability Density Function (PDF) based on HR smoothed series ===== #
@@ -149,13 +149,13 @@ Time, HR = np.meshgrid(t_grid, hr_grid)
 grid_points = np.vstack([Time.ravel(), HR.ravel()]).T
 
 # 3. Evaluate the PDF on the grid and reshape back to 2D (original series)
-if not os.path.isfile(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_db + ".mat"):
+if not os.path.isfile(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_prior + ".mat"):
 	pdf_values = kde_t_hr.pdf(grid_points)
 	Z = pdf_values.reshape(Time.shape)
 	mPDFhrECG = {'t_grid': t_grid, 'hr_grid': hr_grid, 'Time': Time, 'HR': HR, 'grid_points': grid_points, 'pdf_values': pdf_values, 'Z': Z}
-	savemat(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_db + ".mat", mPDFhrECG)
+	savemat(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_prior + ".mat", mPDFhrECG)
 else:
-	mPDFhrECG = loadmat(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_db + ".mat")
+	mPDFhrECG = loadmat(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_prior + ".mat")
 	Z = mPDFhrECG['Z']
 
 # 4. Plot PDF heatmap
@@ -165,8 +165,8 @@ plt.colorbar(label='Probability Density')
 plt.xlabel('Time (s)')
 plt.ylabel('Normalized HR')
 plt.title('Population-based Prior')
-if not os.path.isfile(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_db + ".png"): 
-	plt.savefig(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_db + ".png")	
+if not os.path.isfile(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_prior + ".png"): 
+	plt.savefig(folderResults + "/population-based_prior_hr_norm_t_every1s" + str_prior + ".png")	
 	plt.close()
 
 plt.show()

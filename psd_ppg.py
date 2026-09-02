@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 # SETTINGS
 folderData = './PPG-Prior_Data/'
 folderDS = 'MAX-HIE/' # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
-subject = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
+subject_id = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
 session_id = 'visit1' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE use 'MTXXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
 folderResults = './PSD_PPG/'
 
@@ -95,7 +95,7 @@ def bandpass_filter_rfft(t,sig):
 ## === MAIN SCRIPT === ##
 
 # Get PPG data
-m = loadmat(folderData + folderDS + 'ppg_' + subject + '_' + session_id + '.mat')
+m = loadmat(folderData + folderDS + 'ppg_' + subject_id + '_' + session_id + '.mat')
 t = m['t'].reshape(1, -1)[0].astype(float)
 ppg = m['ppg_raw'].reshape(1, -1)[0].astype(float)
 
@@ -143,7 +143,7 @@ time_windows = np.arange(0,PSD.shape[1])+wl
 
 mPSDPPG = {'time_windows': time_windows, 'frequencies': frequencies, 'PSD': PSD}
 os.makedirs(folderResults + folderDS, exist_ok=True) 
-savemat(folderResults + folderDS + "time_freq_psd_" + subject + "_" + session_id + ".mat", mPSDPPG)
+savemat(folderResults + folderDS + "time_freq_psd_" + subject_id + "_" + session_id + ".mat", mPSDPPG)
 
 # ===== STEP 3: Plot Heatmap of PPG power spectral density over time =====
 plt.figure(figsize=(10, 6))
@@ -151,10 +151,10 @@ plt.pcolor(time_windows, frequencies, PSD, cmap='turbo')
 plt.xlabel('Time (s)')
 plt.colorbar(label='PSD Value')
 plt.ylabel('Frequency (BPM)')
-plt.title('Power Spectral Density Over Time - Subject ' + subject + ' Session ' + session_id)
+plt.title('Power Spectral Density Over Time - Subject ' + subject_id + ' Session ' + session_id)
 
-if not os.path.isfile(folderResults + folderDS + "heatmap_ppg_psd_" + subject + "_" + session_id + ".png"):
-	plt.savefig(folderResults + folderDS + "heatmap_ppg_psd_" + subject + "_" + session_id + ".png")
+if not os.path.isfile(folderResults + folderDS + "heatmap_ppg_psd_" + subject_id + "_" + session_id + ".png"):
+	plt.savefig(folderResults + folderDS + "heatmap_ppg_psd_" + subject_id + "_" + session_id + ".png")
 	plt.close()
 else:
 	plt.show()

@@ -10,7 +10,7 @@ from trajectories import iter_trajectories
 from sklearn.metrics import mean_absolute_error
 
 # Analyzed subject settings and parameters
-subject_analyzed = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
+subject_id = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
 session_id = 'visit1' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE use 'MTXXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
 folderHRval = "./HR_Validation/MAX-HIE/" # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
 folderDS = 'MAX-HIE/' # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
@@ -22,7 +22,7 @@ wl = 8 # seconds
 overlap = wl-1 # seconds
 
 # Prior parameters
-folderPrior = './HR_Priors/' + folderDS + subject_analyzed + '_' + session_id + '/'
+folderPrior = './HR_Priors/' + folderDS + subject_id + '_' + session_id + '/'
 str_prior = '_MAX-HIE' # available priors: '_MAX-HIE', '_ACTES'
 
 # Flags and parameters for trajectory selection with two different scoring metrics on the Posterior Probability Estimation (PPE)
@@ -40,7 +40,7 @@ if flagPlotNormHR == 0:
 else:
 	str_norm = '_normHR'
 
-folderResults = './Results/' + folderDS + subject_analyzed + '_' + session_id
+folderResults = './Results/' + folderDS + subject_id + '_' + session_id
 os.makedirs(folderResults, exist_ok=True)
 
 # Load smoothed HR series from prior population
@@ -53,13 +53,13 @@ t_smoothed_pop_list = mHRsmoothed['t_smoothed_pop_list'][0]
 hr_smoothed_norm_pop_list = mHRsmoothed['hr_smoothed_norm_pop_list'][0]
 
 # Get HRmax from HR validation data for series normalization (RR intervals for MAX-HIE and subject B023 of SUBMAX-HIE, and Hexoskin HR for other subjects of SUBMAX-HIE)
-if(os.path.isfile(folderHRval + 'RR_' + subject_analyzed + '_' + session_id + '.mat')):
-	mRR = loadmat(folderHRval + 'RR_' + subject_analyzed + '_' + session_id + '.mat')
+if(os.path.isfile(folderHRval + 'RR_' + subject_id + '_' + session_id + '.mat')):
+	mRR = loadmat(folderHRval + 'RR_' + subject_id + '_' + session_id + '.mat')
 	t_RR = mRR['t_RR'].reshape(1, -1)[0].astype(float)
 	RR = mRR['RR'].reshape(1, -1)[0].astype(float)
 	HRecg = 60/RR
 else:
-	mHR = loadmat(folderHRval + 'hexoskin_HR_' + subject_analyzed + '_' + session_id + '.mat')
+	mHR = loadmat(folderHRval + 'hexoskin_HR_' + subject_id + '_' + session_id + '.mat')
 	t_RR = mHR['t'].reshape(1, -1)[0].astype(float)
 	HRecg = mHR['y_raw'].reshape(1, -1)[0].astype(float)
 # Smooth query HR series
@@ -82,7 +82,7 @@ if flagTopTraj == 0:
 # from ECG (not considering the subject analyzed)
 
 # Load PSD of PPG as HR-PPG observatios of HR-PPG
-mPSDhrPPG = loadmat(folderPSDPPG + "time_freq_psd_" + subject_analyzed + "_" + session_id + ".mat")
+mPSDhrPPG = loadmat(folderPSDPPG + "time_freq_psd_" + subject_id + "_" + session_id + ".mat")
 time_windows = mPSDhrPPG['time_windows'][0]
 frequencies = mPSDhrPPG['frequencies'][0]
 PSDhrPPG = mPSDhrPPG['PSD']
@@ -182,7 +182,7 @@ if flagPlotNormHR == 1:
 	plt.ylabel('Normalized HR', fontsize=30)
 else:
 	plt.ylabel('HR (BPM)', fontsize=30)
-plt.title('Power Spectral Density Over Time - Subject ' + subject_analyzed + ' Session ' + session_id, fontsize=20)
+plt.title('Power Spectral Density Over Time - Subject ' + subject_id + ' Session ' + session_id, fontsize=20)
 plt.tick_params(axis='both', which='major', labelsize=28)
 if not os.path.isfile(folderResults + "/psd_ppg" + str_norm + str_prior + ".png"): 
 	plt.savefig(folderResults + "/psd_ppg" + str_norm + str_prior + ".png",dpi=180) 
@@ -203,7 +203,7 @@ if flagPlotNormHR == 1:
 	plt.ylabel('Normalized HR', fontsize=30)
 else:
 	plt.ylabel('HR (BPM)', fontsize=30)
-plt.title('Posterior HR Estimation - Subject ' + subject_analyzed + " Session " + session_id, fontsize=20)
+plt.title('Posterior HR Estimation - Subject ' + subject_id + " Session " + session_id, fontsize=20)
 plt.tick_params(axis='both', which='major', labelsize=28)
 if not os.path.isfile(folderResults + "/ppe" + str_norm + str_prior + ".png"): 
 	plt.savefig(folderResults + "/ppe" + str_norm + str_prior + ".png") 
@@ -218,7 +218,7 @@ cbar.set_label('Posterior Probability Estimation', fontsize=30)
 cbar.ax.tick_params(labelsize=30)
 plt.xlabel('Time (s)', fontsize=30)
 plt.ylabel('Normalized HR', fontsize=30)
-plt.title('Posterior HR Estimation - Subject ' + subject_analyzed + " Session " + session_id, fontsize=20)
+plt.title('Posterior HR Estimation - Subject ' + subject_id + " Session " + session_id, fontsize=20)
 plt.tick_params(axis='both', which='major', labelsize=28)
 for traj in trajectories:
 	plt.plot(t_traj, traj, alpha=0.4, linewidth=3)
@@ -241,7 +241,7 @@ if flagPlotNormHR == 1:
 	plt.ylabel('Normalized HR', fontsize=30)
 else:
 	plt.ylabel('HR (BPM)', fontsize=30)
-plt.title('Proposed PPG-exclusive Method on Posterior - Subject ' + subject_analyzed + ' Session ' + session_id, fontsize=20)
+plt.title('Proposed PPG-exclusive Method on Posterior - Subject ' + subject_id + ' Session ' + session_id, fontsize=20)
 if flagPlotNormHR == 1:
 	plt.plot(t_traj,traj_sel, color = 'lime', marker = 'v', markersize=10, linestyle='', label = 'HR-PPG proposed method')
 else:
@@ -249,7 +249,7 @@ else:
 plt.tick_params(axis='both', which='major', labelsize=28)
     
 # Comparison with HR-ECG ground-truth
-if(os.path.isfile(folderHRval + 'RR_' + subject_analyzed + '_' + session_id + '.mat')):
+if(os.path.isfile(folderHRval + 'RR_' + subject_id + '_' + session_id + '.mat')):
 	# Option 1: find mean HR ecg over wl seconds with overlap as the PSD of PPG
 	meanHRecg = []
 	t_meanHRecg = []

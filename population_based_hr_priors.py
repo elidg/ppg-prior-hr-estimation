@@ -13,7 +13,7 @@ folderDSprior = "./HR_Validation/MAX-HIE/" # available dataset to compute prior:
 # Analyzed subject settings
 folderHRval = "./HR_Validation/MAX-HIE/" # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
 folderDS = 'MAX-HIE/' # available datasets: 'MAX-HIE' and 'SUBMAX-HIE'
-subject_analyzed = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
+subject_id = 'sub7' # for dataset MAX-HIE use 'subX'; for dataset SUBMAX-HIE use 'AXXX' or 'BXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
 session_id = 'visit1' # for dataset MAX-HIE use 'visit1'; for dataset SUBMAX-HIE use 'MTXXXX'; the subject and session IDs are reported in the file "PPG-Prior_Data/subject_session_ids.csv"
 
 # HR prior parameters
@@ -39,18 +39,18 @@ else:
 
 # for subject_n in subjects_all: # uncomment this if you want to run the full MAX-HIE with a Leave-One-Subject-Out approach
 
-# 	subject_analyzed = 'sub' + str(subject_n) # uncomment this if you want to run the full MAX-HIE with a Leave-One-Subject-Out approach
+# 	subject_id = 'sub' + str(subject_n) # uncomment this if you want to run the full MAX-HIE with a Leave-One-Subject-Out approach
 
-folderResults = "./HR_Priors/" + folderDS + subject_analyzed + '_' + session_id
+folderResults = "./HR_Priors/" + folderDS + subject_id + '_' + session_id
 
 os.makedirs(folderResults, exist_ok=True)
 
-print("Subject " + subject_analyzed + ' Session ' + session_id)
+print("Subject " + subject_id + ' Session ' + session_id)
 
 if 'SUBMAX-HIE' in folderDS:
 	subjects_prior = subjects_all # Full prior dataset (either MAX-HIE or ACTES) for SUBMAX-HIE
 else:
-	subjects_prior = [sub for sub in subjects_all if sub != int(subject_analyzed[3:])] # Leave-One-Subject-Out approach for MAX-HIE
+	subjects_prior = [sub for sub in subjects_all if sub != int(subject_id[3:])] # Leave-One-Subject-Out approach for MAX-HIE
 
 # ===== STEP 1: Compute HR smoothed series and soft-dtw barycenter average ===== #
 if not os.path.isfile(folderResults + "/t_hr_smoothed_series" + str_prior + ".mat"):
@@ -100,13 +100,13 @@ else:
 	max_t = max(sublist[-1] for sublist in t_smoothed_pop)[0] # final time of the longest series
 	
 # Get HRmax from HR validation data for series normalization (RR intervals for MAX-HIE and subject B023 of SUBMAX-HIE, and Hexoskin HR for other subjects of SUBMAX-HIE)
-if(os.path.isfile(folderHRval + 'RR_' + subject_analyzed + '_' + session_id + '.mat')):
-	mRR = loadmat(folderHRval + 'RR_' + subject_analyzed + '_' + session_id + '.mat')
+if(os.path.isfile(folderHRval + 'RR_' + subject_id + '_' + session_id + '.mat')):
+	mRR = loadmat(folderHRval + 'RR_' + subject_id + '_' + session_id + '.mat')
 	t_RR = mRR['t_RR'].reshape(1, -1)[0].astype(float)
 	RR = mRR['RR'].reshape(1, -1)[0].astype(float)
 	HR = 60/RR
 else:
-	mHR = loadmat(folderHRval + 'hexoskin_HR_' + subject_analyzed + '_' + session_id + '.mat')
+	mHR = loadmat(folderHRval + 'hexoskin_HR_' + subject_id + '_' + session_id + '.mat')
 	t_RR = mHR['t'].reshape(1, -1)[0].astype(float)
 	HR = mHR['y_raw'].reshape(1, -1)[0].astype(float)
 # Smooth query HR series

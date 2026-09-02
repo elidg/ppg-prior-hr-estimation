@@ -18,7 +18,7 @@ For reproducibility, we report here the table of results for the full **MAX-HIE*
 ## MAX-HIE Per-subject results
  
 | Subject | BeliefPPG (PPG+ACC) | BeliefPPG (Only PPG) | PPG-Prior (Top-Traj) | PPG-Prior (Min-DTW) |
-| ------------- | ------------- | ------------- | ------------- | ------------- |
+| :-------------: | :-------------: | :-------------: | :-------------: | :-------------: |
 | sub1  | 60.46 | 67.32 | 23.42 | 24.60 |
 | sub2  | 24.22 | 68.83 | 8.88  | 9.07  | 
 | sub3  | 13.52 | 22.99 | 3.86  | 3.08  |
@@ -43,7 +43,7 @@ For reproducibility, we report here the table of results for the full **MAX-HIE*
 
 ## SUBMAX-HIE Per-subject results
 | Subject | BeliefPPG (PPG+ACC) | BeliefPPG (Only PPG) | PPG-Prior (MAX-HIE, Top-Traj) | PPG-Prior (ACTES, Top-Traj) | PPG-Prior (MAX-HIE, Min-DTW) | PPG-Prior (ACTES, Min-DTW) |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: | :-------------: |
 | A000  | 3.60  | 3.44  | 5.71  | 2.68 | 5.30  | 4.44  |
 | A001  | 4.04  | 4.03  | 3.71  | 3.13 | 6.81  | 14.06 | 
 | A002  | 15.56 | 47.41 | 39.23 | 1.38 | 30.76 | 18.06 |

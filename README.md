@@ -52,6 +52,6 @@ For reproducibility, we report here the table of results for the full **MAX-HIE*
 
 ## 
 
-Please, cite the corresponding paper when using the code (DOI and BIBTEX citation COMING SOON).
+Please, cite the corresponding paper when using the code (DOI and BIBTEX citation COMING SOON. For now, you can check the preprint paper at this [link](https://cinc.org/2026/Program/accepted/263_Preprint.pdf)).
 
 For any question or additional information, please contact me through my [Linkedin](https://www.linkedin.com/in/elisabetta-de-giovanni-a3a804a9/) profile. 
